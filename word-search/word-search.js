@@ -2,8 +2,8 @@
 /**
  * For each cell in the given matrix check if word could be found in one of three possible directions
  * (three since we don't go back on the same line). Solution uses DFS (depth first search) strategy,
- * where we go as far as possible before we try next direction. Time complexity is O(N * 3 ^ L), where
- * L - length of the word.
+ * where we go as far as possible before we try next direction. We also use backtracking method, to mark visited cells.
+ * Time complexity is O(N * 3 ^ L), where L - length of the word.
  */
 
 /**
@@ -12,68 +12,53 @@
  * @return {boolean}
  */
 var exist = function(board, word) {
-  const m = board.length;
-  const n = board[0].length;
-  if (n === 0) {
-      return false;
-  }
+    // rows count
+    const m = board.length;
+    // columns count
+    const n = board[0].length;
 
-  let found = false;
-  for (let i = 0; i < m && !found; i++) {
-      for (let j = 0; j < n && !found; j++) {
-          if (board[i][j] === word[0]) {
-              found = checkWord(i, j, 1, m, n, board, word);
-          }
-      }
-  }
+    if (n === 0) {
+        return false;
+    }
 
-  return found;
+    // [row, column]
+    const directions = [
+        [0, 1], [1, 0], [0, -1], [-1, 0]
+    ];
+
+    const isSafe = (row, col) => {
+        return row < m && row >= 0 && col < n && col >= 0;
+    };
+
+    const lookup = (indexInWord, row, col) => {
+        if (indexInWord === word.length) {
+            return true;
+        }
+        if (!isSafe(row, col) || word[indexInWord] !== board[row][col]) {
+            return false;
+        }
+        // mark visisted cell
+        board[row][col] = '#';
+        for (let [rowDir, colDir] of directions) {
+            const result = lookup(indexInWord + 1, row + rowDir, col + colDir);
+            if (result) {
+                return true;
+            }
+        }
+        // cleanup
+        board[row][col] = word[indexInWord];
+        return false;
+    };
+
+
+    for (let row = 0; row < m; row++) {
+        for (let col = 0; col < n; col++) {
+            const result = lookup(0, row, col);
+            if (result) {
+                return true;
+            }
+        }
+    }
+
+    return false;  
 };
-
-checkWord = (i, j, k, m, n, board, word) => {
-  if (k === word.length) {
-      return true;
-  }
-  // mark the path
-  board[i][j] = '#';
-  let res = false;
-  // check to the right
-  if (j + 1 < n) {
-      if (board[i][j + 1] === word[k]) {
-          res = checkWord(i, j + 1, k + 1, m, n, board, word);
-          if (res) {
-              return true;
-          }
-      }
-  }
-  // check to the bottom
-  if (i + 1 < m) {
-      if (board[i + 1][j] === word[k]) {
-          res = checkWord(i + 1, j, k + 1, m, n, board, word);
-          if (res) {
-              return true;
-          }
-      }
-  }
-  // check to the left
-  if (j - 1 >= 0) {
-      if (board[i][j - 1] === word[k]) {
-          res = checkWord(i, j - 1, k + 1, m, n, board, word);
-          if (res) {
-              return true;
-          }
-      }
-  }
-  // check to the top
-  if (i - 1 >= 0) {
-      if (board[i - 1][j] === word[k]) {
-          res = checkWord(i - 1, j, k + 1, m, n, board, word);
-          if (res) {
-              return true;
-          }
-      }
-  }
-  // cleanup
-  board[i][j] = word[k-1];
-  return res;
-}
