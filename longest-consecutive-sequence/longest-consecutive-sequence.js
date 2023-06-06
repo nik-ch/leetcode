@@ -16,34 +16,23 @@
  * @return {number}
  */
 var longestConsecutive = function(nums) {
-  if (nums.length === 0) {
-      return 0;
-  }
-  if (nums.length === 1) {
-      return 1;
-  }
+    const set = new Set();
+    nums.forEach(n => set.add(n));
 
-  const numsSet = new Set();
-  for (let i = 0; i < nums.length; i++) {
-      numsSet.add(nums[i]);
-  }
+    let max = 0;
+    nums.forEach(n => {
+        if (!set.has(n - 1)) {
+            let streak = 1;
+            let el = n + 1;
+            while (set.has(el)) {
+                el++;
+                streak++;
+            }
+            max = Math.max(max, streak);
+        }
+    });
 
-  let longestPath = 1;
-  let currentStreak;
-  numsSet.forEach(num => {
-      currentStreak = 1;
-      // if there is no element to the left of the current, start sequenece
-      if (!numsSet.has(num - 1)) {
-          let j = 1;
-          while (numsSet.has(num + j)) {
-              currentStreak++;
-              j++;
-          }
-          longestPath = Math.max(currentStreak, longestPath);
-      }
-  });
-
-  return longestPath;
+    return max;
 };
 
 // ------------------------------------------------------
