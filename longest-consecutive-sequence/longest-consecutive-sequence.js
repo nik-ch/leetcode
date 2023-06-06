@@ -45,3 +45,66 @@ var longestConsecutive = function(nums) {
 
   return longestPath;
 };
+
+// ------------------------------------------------------
+
+
+/**
+ * Union-find alike solution.
+ */
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestConsecutive = function(nums) {
+    // O(N)
+    const map = new Map();
+    nums.forEach(n => {
+        markRecursive(map, n);
+        if (!map.has(n)) {
+            map.set(n, 0);
+        }
+    });
+
+    // O(N)
+    nums.forEach(n => {
+        markRecursive(map, n);
+    });
+
+    // O(N)
+    const sizesMap = new Map();
+    for (let v of map.values()) {
+        if (!sizesMap.has(v)) {
+            sizesMap.set(v, 1);
+        } else {
+            sizesMap.set(v, sizesMap.get(v) + 1);
+        }
+    }
+
+    // O(N)
+    let max = 0;
+    for (let s of sizesMap.values()) {
+        max = Math.max(s, max);
+    }
+
+    return max;
+};
+
+var markRecursive = (map, el) => {
+    if (!map.has(el)) {
+        map.set(el, 0);
+        return el;
+    }
+    if (map.get(el) !== 0) {
+        return map.get(el);
+    }
+    if (!map.has(el + 1)) {
+        map.set(el, el);
+        return el;
+    } else {
+        const root = markRecursive(map, el + 1);
+        map.set(el, root);
+        return root;
+    }
+}
