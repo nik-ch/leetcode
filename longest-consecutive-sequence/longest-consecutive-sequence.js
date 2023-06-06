@@ -59,6 +59,7 @@ var longestConsecutive = function(nums) {
  */
 var longestConsecutive = function(nums) {
     // O(N)
+    // put every element to initial map
     const map = new Map();
     nums.forEach(n => {
         markRecursive(map, n);
@@ -68,11 +69,13 @@ var longestConsecutive = function(nums) {
     });
 
     // O(N)
+    // recursievly mark root for every element that belongs to one union group
     nums.forEach(n => {
         markRecursive(map, n);
     });
 
     // O(N)
+    // count how many times each union group appears
     const sizesMap = new Map();
     for (let v of map.values()) {
         if (!sizesMap.has(v)) {
@@ -83,6 +86,7 @@ var longestConsecutive = function(nums) {
     }
 
     // O(N)
+    // return group that appears max times
     let max = 0;
     for (let s of sizesMap.values()) {
         max = Math.max(s, max);
@@ -92,10 +96,6 @@ var longestConsecutive = function(nums) {
 };
 
 var markRecursive = (map, el) => {
-    if (!map.has(el)) {
-        map.set(el, 0);
-        return el;
-    }
     if (map.get(el) !== 0) {
         return map.get(el);
     }
