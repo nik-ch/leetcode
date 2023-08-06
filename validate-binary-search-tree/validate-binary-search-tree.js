@@ -13,15 +13,13 @@
  * @return {boolean}
  */
 var isValidBST = function(root) {
-  return check(root, null, null);
+  return checkBST(root, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
 };
 
-const check = (n, max, min) => {
-  if (n === null) {
+const checkBST = (node, min, max) => {
+  if (node === null) {
       return true;
   }
-  if (max !== null && n.val >= max || min !== null && n.val <= min) {
-      return false;
-  }
-  return check(n.left, n.val, min) && check(n.right, max, n.val);
+  let isValid = node.val < max && node.val > min;
+  return isValid && checkBST(node.left, min, node.val) && checkBST(node.right, node.val, max);
 };
